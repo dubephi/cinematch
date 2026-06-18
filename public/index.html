@@ -938,7 +938,7 @@ input[type="range"]::-webkit-slider-thumb {
 <script>
 // ═══════════════════════════════════════════════════════
 // CONFIGURATION — collez ici l'URL de votre Worker
-const WORKER_URL = '/.netlify/functions/api';
+const WORKER_URL = '/proxy';
 // ═══════════════════════════════════════════════════════
 
 
@@ -987,8 +987,6 @@ function getFilters() {
   const year   = yearEl ? yearEl.textContent : 'toutes époques';
   const langEl = document.querySelector('#lang-tags .tag.on');
   const lang   = langEl ? langEl.textContent : 'peu importe';
-  const mood   = moodEl ? moodEl.textContent : '';
-
   const rtOn     = document.getElementById('rt-on').checked;
   const imdbOn   = document.getElementById('imdb-on').checked;
   const presseOn = document.getElementById('presse-on').checked;
