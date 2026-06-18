@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CinéMatch — Que du meilleur</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ── Palette & tokens ── */
+:root {
+  --noir:    #0E0E0E;
+  --blanc:   #F8F6F1;
+  --or:      #C9A84C;
+  --or-pale: #F5EDD4;
+  --or-dark: #8A6A1A;
+  --gris-1:  #1C1C1C;
+  --gris-2:  #2E2E2E;
+  --gris-3:  #4A4A4A;
+  --gris-4:  #7A7A7A;
+  --gris-5:  #B0B0B0;
+  --gris-6:  #E0DDD6;
+  --rt-r:    #FA320A;
+  --imdb-y:  #F5C518;
+  --presse-g:#1D9E75;
+  --radius:  10px;
+  --radius-lg: 16px;
+  --shadow:  0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.06);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--noir);
+  color: var(--blanc);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Header ── */
+.header {
+  text-align: center;
+  padding: 3rem 1.5rem 2rem;
+  border-bottom: 1px solid var(--gris-2);
+  position: relative;
+}
+
+.header-eyebrow {
+  font-size: 11px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--or);
+  margin-bottom: .75rem;
+  font-weight: 400;
+}
+
+.header h1 {
+  font-family: 'Instrument Serif', serif;
+  font-size: clamp(2.2rem, 6vw, 3.8rem);
+  font-weight: 400;
+  line-height: 1.1;
+  color: var(--blanc);
+  margin-bottom: .5rem;
+  letter-spacing: -.02em;
+}
+
+.header h1 em {
+  font-style: italic;
+  color: var(--or);
+}
+
+.header-sub {
+  font-size: 15px;
+  color: var(--gris-4);
+  font-weight: 300;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+/* ── Fav button header ── */
+.fav-header-btn {
+  position: absolute;
+  top: 2rem;
+  right: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 50px;
+  border: 1px solid var(--gris-2);
+  background: transparent;
+  font-size: 13px;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--gris-4);
+  cursor: pointer;
+  transition: all .2s;
+}
+
+.fav-header-btn:hover { border-color: var(--gris-3); color: var(--blanc); }
+.fav-header-btn .badge {
+  background: var(--or);
+  color: var(--noir);
+  font-size: 11px;
+  font-weight: 500;
+  border-radius: 50px;
+  padding: 0 6px;
+  min-width: 18px;
+  text-align: center;
+  display: none;
+}
+.fav-header-btn .badge.on { display: inline-block; }
+
+/* ── Main layout ── */
+.main {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+/* ── Section labels ── */
+.sec-label {
+  font-size: 10px;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--gris-4);
+  font-weight: 500;
+  margin-bottom: .75rem;
+  display: block;
+}
+
+/* ── Type toggle (Film / Série) ── */
+.type-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 2rem;
+}
+
+.type-btn {
+  flex: 1;
+  padding: 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--gris-2);
+  background: var(--gris-1);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--gris-4);
+  cursor: pointer;
+  transition: all .2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.type-btn:hover { border-color: var(--gris-3); color: var(--blanc); }
+.type-btn.on {
+  background: var(--or-pale);
+  border-color: var(--or);
+  color: var(--or-dark);
+  font-weight: 500;
+}
+
+/* ── Filters card ── */
+.filters-card {
+  background: var(--gris-1);
+  border: 1px solid var(--gris-2);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+/* ── Genre tags ── */
+.tags-wrap { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 1.5rem; }
+
+.tag {
+  padding: 7px 14px;
+  border-radius: 50px;
+  border: 1px solid var(--gris-2);
+  background: transparent;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  color: var(--gris-4);
+  cursor: pointer;
+  transition: all .15s;
+}
+
+.tag:hover { border-color: var(--gris-3); color: var(--blanc); }
+.tag.on {
+  background: var(--or-pale);
+  border-color: var(--or);
+  color: var(--or-dark);
+  font-weight: 500;
+}
+
+/* ── Platform grid ── */
+.plat-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 540px) { .plat-grid { grid-template-columns: repeat(3, 1fr); } }
+
+.plat-btn {
+  padding: 10px 6px;
+  border-radius: var(--radius);
+  border: 1px solid var(--gris-2);
+  background: transparent;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  color: var(--gris-4);
+  cursor: pointer;
+  transition: all .15s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.plat-btn:hover { border-color: var(--gris-3); color: var(--blanc); }
+.plat-btn.on { background: var(--or-pale); border-color: var(--or); color: var(--or-dark); font-weight: 500; }
+.plat-icon { font-size: 18px; }
+
+/* ── Year range ── */
+.year-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 1.5rem;
+}
+
+.year-label-group { flex: 1; }
+.year-name { font-size: 13px; font-weight: 500; color: var(--blanc); }
+.year-sub { font-size: 11px; color: var(--gris-4); }
+
+.year-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+.year-pill {
+  padding: 6px 12px;
+  border-radius: 50px;
+  border: 1px solid var(--gris-2);
+  background: transparent;
+  font-size: 12px;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--gris-4);
+  cursor: pointer;
+  transition: all .15s;
+}
+.year-pill:hover { border-color: var(--gris-3); color: var(--blanc); }
+.year-pill.on { background: var(--or-pale); border-color: var(--or); color: var(--or-dark); font-weight: 500; }
+
+/* ── Divider ── */
+.filter-divider { border: none; border-top: 1px solid var(--gris-2); margin: 1.25rem 0; }
+
+/* ── Ratings block — the signature ── */
+.ratings-block { }
+
+.rating-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--gris-2);
+}
+.rating-row:last-child { border-bottom: none; padding-bottom: 0; }
+
+.rating-info { flex: 1; min-width: 0; }
+
+.rating-source {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--blanc);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 2px;
+}
+
+.source-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.rating-desc { font-size: 11px; color: var(--gris-4); }
+
+/* Toggle switch */
+.sw { position: relative; width: 36px; height: 20px; flex-shrink: 0; cursor: pointer; }
+.sw input { opacity: 0; width: 0; height: 0; position: absolute; }
+.sw-track { position: absolute; inset: 0; background: var(--gris-2); border-radius: 50px; transition: .2s; }
+.sw input:checked + .sw-track { background: var(--or); }
+.sw-thumb { position: absolute; top: 3px; left: 3px; width: 14px; height: 14px; background: #fff; border-radius: 50%; transition: .2s; }
+.sw input:checked ~ .sw-thumb { left: 19px; }
+
+/* Score slider group */
+.score-ctrl {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  opacity: .25;
+  pointer-events: none;
+  transition: opacity .2s;
+  flex-shrink: 0;
+}
+.score-ctrl.on { opacity: 1; pointer-events: all; }
+
+.score-display {
+  font-family: 'Instrument Serif', serif;
+  font-size: 1.1rem;
+  color: var(--or);
+  min-width: 48px;
+  text-align: right;
+  line-height: 1;
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  width: 100px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--gris-2);
+  cursor: pointer;
+  accent-color: var(--or);
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: var(--or);
+  cursor: pointer;
+  border: 2px solid var(--noir);
+}
+
+/* ── CTA button ── */
+.cta-wrap { margin-top: 1.5rem; }
+
+.cta-btn {
+  width: 100%;
+  padding: 16px;
+  border-radius: var(--radius);
+  border: none;
+  background: var(--or);
+  color: var(--noir);
+  font-family: 'Instrument Serif', serif;
+  font-size: 1.2rem;
+  font-weight: 400;
+  cursor: pointer;
+  transition: all .2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  letter-spacing: -.01em;
+}
+
+.cta-btn:hover { background: #D4A84C; transform: translateY(-1px); }
+.cta-btn:active { transform: translateY(0); }
+.cta-btn:disabled { background: var(--gris-2); color: var(--gris-4); transform: none; cursor: not-allowed; }
+
+/* ── Loading ── */
+.loading {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 4rem 1rem;
+  text-align: center;
+}
+.loading.on { display: flex; }
+
+.loading-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: 1.5rem;
+  font-style: italic;
+  color: var(--or);
+}
+
+.loading-sub { font-size: 13px; color: var(--gris-4); }
+
+.dots { display: flex; gap: 6px; }
+.dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--or);
+  opacity: .4;
+  animation: pulse 1.4s infinite ease-in-out;
+}
+.dot:nth-child(2) { animation-delay: .2s; }
+.dot:nth-child(3) { animation-delay: .4s; }
+@keyframes pulse { 0%,80%,100%{opacity:.2;transform:scale(.8)} 40%{opacity:1;transform:scale(1.1)} }
+
+/* ── Results ── */
+.results { display: none; }
+.results.on { display: block; }
+
+.results-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.results-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: 1.6rem;
+  color: var(--blanc);
+}
+
+.results-title em { font-style: italic; color: var(--or); }
+
+.results-meta {
+  font-size: 12px;
+  color: var(--gris-4);
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.btn-reset {
+  padding: 8px 16px;
+  border-radius: 50px;
+  border: 1px solid var(--gris-2);
+  background: transparent;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  color: var(--gris-4);
+  cursor: pointer;
+  transition: all .2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn-reset:hover { border-color: var(--gris-3); color: var(--blanc); }
+
+/* ── Reco card ── */
+.reco-list { display: flex; flex-direction: column; gap: 12px; }
+
+.reco-card {
+  background: var(--gris-1);
+  border: 1px solid var(--gris-2);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity .45s, transform .45s, border-color .2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.reco-card.show { opacity: 1; transform: translateY(0); }
+.reco-card:hover { border-color: var(--gris-3); }
+
+/* Gold accent bar */
+.reco-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, var(--or) 0%, transparent 100%);
+}
+
+.reco-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
+.reco-title-wrap { flex: 1; min-width: 0; }
+
+.reco-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: 1.2rem;
+  color: var(--blanc);
+  line-height: 1.25;
+  margin-bottom: 5px;
+}
+
+.reco-tags { display: flex; gap: 5px; flex-wrap: wrap; }
+
+.rtag {
+  font-size: 11px;
+  padding: 3px 9px;
+  border-radius: 50px;
+  font-weight: 500;
+  white-space: nowrap;
+  border: 1px solid transparent;
+}
+
+.rtag-type { background: var(--gris-2); color: var(--gris-5); border-color: var(--gris-2); }
+.rtag-year { background: transparent; color: var(--gris-4); border-color: var(--gris-2); }
+.rtag-plat { background: rgba(201,168,76,.12); color: var(--or); border-color: rgba(201,168,76,.3); }
+.rtag-lang { background: transparent; color: var(--gris-4); border-color: var(--gris-2); }
+
+/* Scores row */
+.reco-scores { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 10px; }
+
+.score-chip {
+  font-size: 11px;
+  padding: 3px 9px;
+  border-radius: 50px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid transparent;
+}
+
+.sc-rt     { background: rgba(250,50,10,.1); color: #FF8066; border-color: rgba(250,50,10,.25); }
+.sc-imdb   { background: rgba(245,197,24,.1); color: #F5C518; border-color: rgba(245,197,24,.25); }
+.sc-presse { background: rgba(29,158,117,.1); color: #3DD4A0; border-color: rgba(29,158,117,.25); }
+
+/* Score dot indicator (colored square) */
+.sc-dot { width: 6px; height: 6px; border-radius: 2px; flex-shrink: 0; }
+.sc-dot-rt { background: var(--rt-r); }
+.sc-dot-imdb { background: var(--imdb-y); border-radius: 2px; }
+.sc-dot-presse { background: var(--presse-g); }
+
+.reco-desc {
+  font-size: 14px;
+  color: var(--gris-4);
+  line-height: 1.65;
+  margin-bottom: 10px;
+}
+
+.reco-why {
+  font-size: 13px;
+  color: var(--or);
+  font-style: italic;
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.reco-footer { display: flex; justify-content: flex-end; }
+
+.save-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 14px;
+  border-radius: 50px;
+  border: 1px solid var(--gris-2);
+  background: transparent;
+  font-size: 12px;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--gris-4);
+  cursor: pointer;
+  transition: all .2s;
+}
+.save-btn:hover { border-color: var(--or); color: var(--or); }
+.save-btn.saved { border-color: var(--or); color: var(--or); background: rgba(201,168,76,.08); }
+
+/* ── Error ── */
+.err-box {
+  display: none;
+  background: rgba(250,50,10,.08);
+  border: 1px solid rgba(250,50,10,.2);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  font-size: 13px;
+  color: #FF8066;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+.err-box.on { display: block; }
+
+/* ── Favs panel ── */
+.favs-panel { display: none; }
+.favs-panel.on { display: block; }
+
+.favs-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.favs-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: 1.6rem;
+  color: var(--blanc);
+}
+.favs-title em { font-style: italic; color: var(--or); }
+
+.btn-back-favs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 50px;
+  border: 1px solid var(--gris-2);
+  background: transparent;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  color: var(--gris-4);
+  cursor: pointer;
+  transition: all .2s;
+}
+.btn-back-favs:hover { border-color: var(--gris-3); color: var(--blanc); }
+
+.fav-card {
+  background: var(--gris-1);
+  border: 1px solid var(--gris-2);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 10px;
+  position: relative;
+  overflow: hidden;
+  animation: slideIn .3s ease;
+}
+
+@keyframes slideIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+.fav-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--presse-g);
+}
+
+.fav-card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 6px; }
+
+.fav-card-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: 1.1rem;
+  color: var(--blanc);
+  line-height: 1.25;
+}
+
+.btn-rm-fav {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--gris-2);
+  background: transparent;
+  color: var(--gris-4);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  transition: all .15s;
+  flex-shrink: 0;
+}
+.btn-rm-fav:hover { border-color: var(--rt-r); color: #FF8066; }
+
+.fav-meta { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 6px; }
+.fav-desc { font-size: 13px; color: var(--gris-4); line-height: 1.6; }
+.fav-date { font-size: 11px; color: var(--gris-4); margin-top: 6px; opacity: .6; }
+
+.fav-empty {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+.fav-empty-icon { font-size: 2.5rem; color: var(--gris-3); margin-bottom: 12px; }
+.fav-empty p { font-size: 14px; color: var(--gris-4); }
+.fav-empty small { font-size: 12px; color: var(--gris-4); opacity: .6; }
+
+/* ── Toast ── */
+.toast-wrap { position: relative; height: 0; }
+.toast {
+  position: absolute;
+  bottom: 0; left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--or);
+  color: var(--noir);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 20px;
+  border-radius: 50px;
+  opacity: 0;
+  transition: all .3s;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 10;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(-14px); }
+
+/* ── Separator ── */
+.screen-sep {
+  text-align: center;
+  font-size: 10px;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--gris-3);
+  margin: 2rem 0 1.5rem;
+  position: relative;
+}
+.screen-sep::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0; right: 0;
+  height: 1px;
+  background: var(--gris-2);
+  z-index: 0;
+}
+.screen-sep span {
+  background: var(--noir);
+  padding: 0 12px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── API notice ── */
+.api-notice {
+  background: rgba(201,168,76,.06);
+  border: 1px solid rgba(201,168,76,.2);
+  border-radius: var(--radius);
+  padding: .875rem 1.25rem;
+  font-size: 12px;
+  color: var(--or);
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.api-notice a { color: var(--or); }
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .header { padding: 2rem 1rem 1.5rem; }
+  .fav-header-btn { top: 1.25rem; right: 1rem; }
+  .main { padding: 1.5rem 1rem 3rem; }
+  .score-ctrl input[type="range"] { width: 70px; }
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <p class="header-eyebrow">Découvrez ce soir</p>
+  <h1>Seulement <em>l'excellent</em></h1>
+  <p class="header-sub">Filtrez, l'IA sélectionne. Que des films et séries à ne pas manquer.</p>
+  <button class="fav-header-btn" onclick="toggleFavs()" aria-label="Mes favoris">
+    ♡ Favoris
+    <span class="badge" id="fav-badge">0</span>
+  </button>
+</header>
+
+<main class="main" id="app">
+
+  <div id="filters-view">
+
+    <!-- Type -->
+    <span class="sec-label">Je cherche</span>
+    <div class="type-row" role="group" aria-label="Type de contenu">
+      <button class="type-btn on" id="t-film" onclick="selType('film',this)">🎬 Films</button>
+      <button class="type-btn" id="t-serie" onclick="selType('serie',this)">📺 Séries</button>
+      <button class="type-btn" id="t-both" onclick="selType('both',this)">✨ Les deux</button>
+    </div>
+
+    <div class="filters-card">
+
+      <!-- Genre -->
+      <span class="sec-label">Genres</span>
+      <div class="tags-wrap" id="genre-tags">
+        <button class="tag" onclick="this.classList.toggle('on')">Thriller</button>
+        <button class="tag" onclick="this.classList.toggle('on')">Science-fiction</button>
+        <button class="tag" onclick="this.classList.toggle('on')">Drame</button>
+        <button class="tag" onclick="this.classList.toggle('on')">Comédie</button>
+        <button class="tag" onclick="this.classList.toggle('on')">Action</button>
+        <button class="tag" onclick="this.classList.toggle('on')">Horreur</button>
+        <button class="tag" onclick="this.classList.toggle('on')">Fantastique</button>
+        <button class="tag" onclick="this.classList.toggle('on')">Historique</button>
+        <button class="tag" onclick="this.classList.toggle('on')">Policier</button>
+        <button class="tag" onclick="this.classList.toggle('on')">Romance</button>
+        <button class="tag" onclick="this.classList.toggle('on')">Documentaire</button>
+        <button class="tag" onclick="this.classList.toggle('on')">Animation</button>
+        <button class="tag" onclick="this.classList.toggle('on')">Biographie</button>
+        <button class="tag" onclick="this.classList.toggle('on')">Aventure</button>
+      </div>
+
+      <hr class="filter-divider">
+
+      <!-- Plateformes -->
+      <span class="sec-label">Plateformes</span>
+      <div class="plat-grid" id="plat-grid">
+        <button class="plat-btn" onclick="this.classList.toggle('on')">
+          <span class="plat-icon" style="color:#E50914">N</span>Netflix
+        </button>
+        <button class="plat-btn" onclick="this.classList.toggle('on')">
+          <span class="plat-icon" style="color:#185FA5">D+</span>Disney+
+        </button>
+        <button class="plat-btn" onclick="this.classList.toggle('on')">
+          <span class="plat-icon" style="color:#1D9E75">▶</span>Amazon
+        </button>
+        <button class="plat-btn" onclick="this.classList.toggle('on')">
+          <span class="plat-icon" style="color:#7F77DD">C</span>Crave
+        </button>
+        <button class="plat-btn" onclick="this.classList.toggle('on')">
+          <span class="plat-icon">🍎</span>Apple TV+
+        </button>
+      </div>
+
+      <hr class="filter-divider">
+
+      <!-- Années -->
+      <span class="sec-label">Période</span>
+      <div class="year-row">
+        <div class="year-pills" role="group" aria-label="Période de sortie">
+          <button class="year-pill" onclick="selYear(this)">Récent (2020+)</button>
+          <button class="year-pill" onclick="selYear(this)">2010 – 2020</button>
+          <button class="year-pill" onclick="selYear(this)">2000 – 2010</button>
+          <button class="year-pill" onclick="selYear(this)">Classiques (–2000)</button>
+          <button class="year-pill on" onclick="selYear(this)">Toutes époques</button>
+        </div>
+      </div>
+
+      <hr class="filter-divider">
+
+      <!-- Langue -->
+      <span class="sec-label">Langue de visionnement</span>
+      <div class="tags-wrap" style="margin-bottom:0" id="lang-tags">
+        <button class="tag" onclick="selLang(this)">VF (doublé)</button>
+        <button class="tag" onclick="selLang(this)">VOSTFR</button>
+        <button class="tag" onclick="selLang(this)">VO anglais</button>
+        <button class="tag on" onclick="selLang(this)">Peu importe</button>
+      </div>
+    </div>
+
+    <!-- Ratings — la clé de voûte -->
+    <div class="filters-card">
+      <span class="sec-label">Notes minimales exigées — l'excellence uniquement</span>
+      <div class="ratings-block">
+
+        <div class="rating-row">
+          <div class="rating-info">
+            <div class="rating-source">
+              <span class="source-dot" style="background:var(--rt-r)"></span>
+              Rotten Tomatoes
+            </div>
+            <div class="rating-desc">Score de la presse critique (%)</div>
+          </div>
+          <label class="sw" aria-label="Activer filtre Rotten Tomatoes">
+            <input type="checkbox" id="rt-on" checked onchange="toggleScore('rt')">
+            <div class="sw-track"></div><div class="sw-thumb"></div>
+          </label>
+          <div class="score-ctrl on" id="sc-rt">
+            <input type="range" min="50" max="100" value="90" step="1" id="rt-v"
+              oninput="document.getElementById('rt-lbl').textContent=Math.round(this.value)+'%'">
+            <span class="score-display" id="rt-lbl">90%</span>
+          </div>
+        </div>
+
+        <div class="rating-row">
+          <div class="rating-info">
+            <div class="rating-source">
+              <span class="source-dot" style="background:var(--imdb-y);border-radius:2px"></span>
+              IMDb
+            </div>
+            <div class="rating-desc">Note du public sur 10</div>
+          </div>
+          <label class="sw" aria-label="Activer filtre IMDb">
+            <input type="checkbox" id="imdb-on" checked onchange="toggleScore('imdb')">
+            <div class="sw-track"></div><div class="sw-thumb"></div>
+          </label>
+          <div class="score-ctrl on" id="sc-imdb">
+            <input type="range" min="5" max="10" value="8" step="0.5" id="imdb-v"
+              oninput="document.getElementById('imdb-lbl').textContent=parseFloat(this.value).toFixed(1)+'/10'">
+            <span class="score-display" id="imdb-lbl">8.0/10</span>
+          </div>
+        </div>
+
+        <div class="rating-row">
+          <div class="rating-info">
+            <div class="rating-source">
+              <span class="source-dot" style="background:var(--presse-g)"></span>
+              La Presse
+            </div>
+            <div class="rating-desc">Critique québécoise sur 10</div>
+          </div>
+          <label class="sw" aria-label="Activer filtre La Presse">
+            <input type="checkbox" id="presse-on" checked onchange="toggleScore('presse')">
+            <div class="sw-track"></div><div class="sw-thumb"></div>
+          </label>
+          <div class="score-ctrl on" id="sc-presse">
+            <input type="range" min="5" max="10" value="8" step="0.5" id="presse-v"
+              oninput="document.getElementById('presse-lbl').textContent=parseFloat(this.value).toFixed(1)+'/10'">
+            <span class="score-display" id="presse-lbl">8.0/10</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="err-box" id="err-box"></div>
+
+    <div class="cta-wrap">
+      <button class="cta-btn" onclick="getRecos()" id="cta">
+        Trouver l'excellence ce soir →
+      </button>
+    </div>
+
+  </div><!-- /filters-view -->
+
+  <!-- Loading -->
+  <div class="loading" id="loading">
+    <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+    <div class="loading-title" id="loading-txt">Recherche en cours…</div>
+    <div class="loading-sub">L'IA sélectionne uniquement ce qui mérite votre soirée</div>
+  </div>
+
+  <!-- Results -->
+  <div class="results" id="results">
+    <div class="results-head">
+      <div class="results-title">Votre sélection <em>ce soir</em></div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span class="results-meta" id="res-count"></span>
+        <button class="btn-reset" onclick="resetFilters()">← Modifier les filtres</button>
+      </div>
+    </div>
+    <div class="reco-list" id="reco-list"></div>
+  </div>
+
+  <!-- Favs panel -->
+  <div class="favs-panel" id="favs-panel">
+    <div class="favs-head">
+      <div class="favs-title">Mes <em>favoris</em></div>
+      <button class="btn-back-favs" onclick="toggleFavs()">← Retour</button>
+    </div>
+    <div id="favs-list"></div>
+  </div>
+
+  <div class="toast-wrap"><div class="toast" id="toast"></div></div>
+
+</main>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// CONFIGURATION — collez ici l'URL de votre Worker
+const WORKER_URL = '/proxy';
+// ═══════════════════════════════════════════════════════
+
+
+let favorites = [];
+let showingFavs = false;
+let lastRecos = [];
+
+// ── Init ──
+(function init() {
+  try { favorites = JSON.parse(localStorage.getItem('cm2_favorites') || '[]'); } catch(e) {}
+  updateFavBadge();
+})();
+
+// ── Type selection ──
+let currentType = 'film';
+function selType(t, el) {
+  currentType = t;
+  ['t-film','t-serie','t-both'].forEach(id => document.getElementById(id).classList.remove('on'));
+  el.classList.add('on');
+}
+
+// ── Year selection (single) ──
+function selYear(el) {
+  document.querySelectorAll('.year-pill').forEach(b => b.classList.remove('on'));
+  el.classList.add('on');
+}
+
+// ── Lang selection (single) ──
+function selLang(el) {
+  document.querySelectorAll('#lang-tags .tag').forEach(b => b.classList.remove('on'));
+  el.classList.add('on');
+}
+
+
+// ── Ratings toggle ──
+function toggleScore(id) {
+  const on = document.getElementById(id + '-on').checked;
+  document.getElementById('sc-' + id).classList.toggle('on', on);
+}
+
+// ── Collect filter values ──
+function getFilters() {
+  const genres = [...document.querySelectorAll('#genre-tags .tag.on')].map(t => t.textContent).join(', ');
+  const plats  = [...document.querySelectorAll('#plat-grid .plat-btn.on')].map(b => b.textContent.trim()).join(', ');
+  const yearEl = document.querySelector('.year-pill.on');
+  const year   = yearEl ? yearEl.textContent : 'toutes époques';
+  const langEl = document.querySelector('#lang-tags .tag.on');
+  const lang   = langEl ? langEl.textContent : 'peu importe';
+  const mood   = moodEl ? moodEl.textContent : '';
+
+  const rtOn     = document.getElementById('rt-on').checked;
+  const imdbOn   = document.getElementById('imdb-on').checked;
+  const presseOn = document.getElementById('presse-on').checked;
+
+  const scores = [];
+  if (rtOn)     scores.push('Rotten Tomatoes ≥ ' + Math.round(parseFloat(document.getElementById('rt-v').value)) + '%');
+  if (imdbOn)   scores.push('IMDb ≥ ' + parseFloat(document.getElementById('imdb-v').value).toFixed(1) + '/10');
+  if (presseOn) scores.push('La Presse ≥ ' + parseFloat(document.getElementById('presse-v').value).toFixed(1) + '/10');
+
+  return { genres, plats, year, lang, scores, rtOn, imdbOn, presseOn };
+}
+
+// ── Build prompt ──
+function buildPrompt(f) {
+  const typeLabel = currentType === 'film' ? 'films' : currentType === 'serie' ? 'séries' : 'films et séries';
+  const scoresStr = f.scores.length > 0
+    ? `\n- SCORES RÉELS MINIMAUX OBLIGATOIRES : ${f.scores.join(', ')}. Ne propose QUE des œuvres ayant réellement obtenu ces scores. Indique les scores réels dans le JSON.`
+    : '';
+
+  return `Tu es un expert en cinéma et séries télévisées. Sélectionne exactement 5 ${typeLabel} d'une excellence absolue.
+
+Critères :
+- Genres souhaités : ${f.genres || 'tous genres'}
+- Plateformes : ${f.plats || 'toutes plateformes'}
+- Période : ${f.year}
+- Langue de visionnement : ${f.lang}
+${scoresStr}
+
+RÈGLE ABSOLUE : ne propose que ce qui est vraiment exceptionnel, mémorable, incontournable. Pas de médiocrité. Chaque recommandation doit mériter une soirée.
+
+Réponds UNIQUEMENT en JSON valide, sans markdown ni texte autour :
+{"recommendations":[{
+  "title":"Titre original",
+  "year":"Année",
+  "type":"Film ou Série",
+  "genre":"Genre principal",
+  "platform":"Plateforme principale disponible",
+  "language":"Langue originale (ex: Anglais, Coréen, Français...)",
+  "scores":{${f.rtOn ? '"rt":"score% réel",' : ''}"_":null${f.imdbOn ? ',"imdb":"score/10 réel"' : ''}${f.presseOn ? ',"presse":"score/10 réel"' : ''}},
+  "description":"2-3 phrases évocatrices, max 80 mots. Donne envie sans spoiler.",
+  "why":"Une phrase sur pourquoi c'est un chef-d'œuvre à ne pas manquer."
+}]}`;
+}
+
+// ── API call ──
+async function getRecos() {
+  const errEl = document.getElementById('err-box');
+  errEl.classList.remove('on');
+  const f = getFilters();
+  const prompt = buildPrompt(f);
+
+  document.getElementById('filters-view').style.display = 'none';
+  document.getElementById('results').classList.remove('on');
+  document.getElementById('loading').classList.add('on');
+
+  const msgs = [
+    'Recherche de l\'excellence…',
+    'Sélection rigoureuse en cours…',
+    'Vérification des scores…',
+    'Finalisation de votre soirée…'
+  ];
+  let mi = 0;
+  const iv = setInterval(() => {
+    mi = (mi + 1) % msgs.length;
+    document.getElementById('loading-txt').textContent = msgs[mi];
+  }, 2000);
+
+  try {
+    const res = await fetch(WORKER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1500,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    clearInterval(iv);
+    if (!res.ok) throw new Error('Erreur HTTP ' + res.status);
+    const data = await res.json();
+    const text = data.content.map(c => c.text || '').join('');
+    const parsed = JSON.parse(text.replace(/```json|```/g, '').trim());
+    lastRecos = parsed.recommendations;
+    showResults(lastRecos, f);
+  } catch(e) {
+    clearInterval(iv);
+    document.getElementById('loading').classList.remove('on');
+    document.getElementById('filters-view').style.display = 'block';
+    errEl.textContent = '⚠ Erreur : ' + e.message + '. Vérifiez votre clé API et votre connexion.';
+    errEl.classList.add('on');
+  }
+}
+
+// ── Show results ──
+function showResults(recos, f) {
+  document.getElementById('loading').classList.remove('on');
+  const list = document.getElementById('reco-list');
+  list.innerHTML = '';
+
+  const countTxt = recos.length + ' sélection' + (recos.length > 1 ? 's' : '') + ' d\'exception';
+  document.getElementById('res-count').textContent = countTxt;
+
+  recos.forEach((r, i) => {
+    const s = r.scores || {};
+
+    let scoresHTML = '';
+    const sparts = [];
+    if (s.rt && s.rt !== 'null' && s.rt !== null)
+      sparts.push(`<span class="score-chip sc-rt"><span class="sc-dot sc-dot-rt"></span>RT ${s.rt}</span>`);
+    if (s.imdb && s.imdb !== 'null' && s.imdb !== null)
+      sparts.push(`<span class="score-chip sc-imdb"><span class="sc-dot sc-dot-imdb"></span>IMDb ${s.imdb}</span>`);
+    if (s.presse && s.presse !== 'null' && s.presse !== null)
+      sparts.push(`<span class="score-chip sc-presse"><span class="sc-dot sc-dot-presse"></span>La Presse ${s.presse}</span>`);
+    if (sparts.length) scoresHTML = `<div class="reco-scores">${sparts.join('')}</div>`;
+
+    const platHTML = r.platform ? `<span class="rtag rtag-plat">${r.platform}</span>` : '';
+    const langHTML = r.language ? `<span class="rtag rtag-lang">${r.language}</span>` : '';
+    const isSaved = favorites.some(fav => fav.title === r.title);
+
+    const card = document.createElement('div');
+    card.className = 'reco-card';
+    card.dataset.reco = JSON.stringify(r);
+    card.innerHTML = `
+      <div class="reco-header">
+        <div class="reco-title-wrap">
+          <div class="reco-title">${r.title}</div>
+          <div class="reco-tags">
+            <span class="rtag rtag-type">${r.type}</span>
+            ${r.year ? `<span class="rtag rtag-year">${r.year}</span>` : ''}
+            <span class="rtag rtag-type">${r.genre}</span>
+            ${platHTML}${langHTML}
+          </div>
+        </div>
+      </div>
+      ${scoresHTML}
+      <p class="reco-desc">${r.description}</p>
+      <p class="reco-why">✦ ${r.why}</p>
+      <div class="reco-footer">
+        <button class="save-btn ${isSaved ? 'saved' : ''}" onclick="addFav(this)">
+          ${isSaved ? '♥ Sauvegardé' : '♡ Sauvegarder'}
+        </button>
+      </div>`;
+    list.appendChild(card);
+    setTimeout(() => card.classList.add('show'), 80 + i * 100);
+  });
+
+  document.getElementById('results').classList.add('on');
+}
+
+// ── Reset ──
+function resetFilters() {
+  document.getElementById('results').classList.remove('on');
+  document.getElementById('filters-view').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── Favorites ──
+function saveFavs() {
+  try { localStorage.setItem('cm2_favorites', JSON.stringify(favorites)); } catch(e) {}
+}
+
+function updateFavBadge() {
+  const n = favorites.length;
+  const badge = document.getElementById('fav-badge');
+  badge.textContent = n;
+  badge.classList.toggle('on', n > 0);
+}
+
+function addFav(btn) {
+  const card = btn.closest('.reco-card');
+  const reco = JSON.parse(card.dataset.reco);
+  const idx = favorites.findIndex(f => f.title === reco.title);
+  if (idx > -1) {
+    favorites.splice(idx, 1);
+    btn.classList.remove('saved');
+    btn.textContent = '♡ Sauvegarder';
+    showToast('Retiré des favoris');
+  } else {
+    reco.savedAt = new Date().toLocaleDateString('fr-CA', { day: 'numeric', month: 'long', year: 'numeric' });
+    favorites.push({ ...reco });
+    btn.classList.add('saved');
+    btn.textContent = '♥ Sauvegardé';
+    showToast('Ajouté à vos favoris !');
+  }
+  saveFavs();
+  updateFavBadge();
+}
+
+function renderFavs() {
+  const list = document.getElementById('favs-list');
+  if (!favorites.length) {
+    list.innerHTML = `<div class="fav-empty">
+      <div class="fav-empty-icon">♡</div>
+      <p>Aucun favori pour l'instant</p>
+      <small>Sauvegardez vos découvertes depuis les résultats</small>
+    </div>`;
+    return;
+  }
+  list.innerHTML = '';
+  [...favorites].reverse().forEach((fav, ri) => {
+    const realIdx = favorites.length - 1 - ri;
+    const platHTML = fav.platform ? `<span class="rtag rtag-plat">${fav.platform}</span>` : '';
+    const div = document.createElement('div');
+    div.className = 'fav-card';
+    div.innerHTML = `
+      <div class="fav-card-top">
+        <div class="fav-card-title">${fav.title}</div>
+        <button class="btn-rm-fav" onclick="removeFav(${realIdx})" aria-label="Retirer">✕</button>
+      </div>
+      <div class="fav-meta">
+        <span class="rtag rtag-type">${fav.type}</span>
+        ${fav.year ? `<span class="rtag rtag-year">${fav.year}</span>` : ''}
+        <span class="rtag rtag-type">${fav.genre}</span>
+        ${platHTML}
+      </div>
+      <p class="fav-desc">${fav.description}</p>
+      <p class="fav-date">Ajouté le ${fav.savedAt || ''}</p>`;
+    list.appendChild(div);
+  });
+}
+
+function removeFav(i) {
+  favorites.splice(i, 1);
+  saveFavs();
+  updateFavBadge();
+  renderFavs();
+  showToast('Retiré des favoris');
+}
+
+function toggleFavs() {
+  showingFavs = !showingFavs;
+  document.getElementById('favs-panel').classList.toggle('on', showingFavs);
+
+  const hide = showingFavs;
+  document.getElementById('filters-view').style.display = hide ? 'none' : 'block';
+  document.getElementById('loading').style.display = hide ? 'none' : '';
+  document.getElementById('results').style.display = hide ? 'none' : '';
+
+  if (showingFavs) renderFavs();
+  else {
+    document.getElementById('results').style.display = '';
+    document.getElementById('loading').style.display = '';
+  }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── Toast ──
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+</script>
+</body>
+</html>
