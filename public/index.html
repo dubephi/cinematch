@@ -734,37 +734,37 @@ input[type="range"]::-webkit-slider-thumb {
   .score-ctrl input[type="range"] { width: 70px; }
 }
 
-/* ── Key modal ── */
-.key-overlay {
-  display: none; position: fixed; inset: 0;
-  background: rgba(0,0,0,.88); z-index: 1000;
-  align-items: center; justify-content: center; padding: 1.5rem;
+.cm-key-overlay {
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,.88); z-index:9999;
+  align-items:center; justify-content:center; padding:1.5rem;
 }
-.key-overlay.on { display: flex; }
-.key-modal {
-  background: #1C1C1C; border: 1px solid #2E2E2E;
-  border-radius: 16px; padding: 2rem; max-width: 460px; width: 100%;
+.cm-key-overlay.on { display:flex; }
+.cm-key-box {
+  background:#1C1C1C; border:1px solid #2E2E2E;
+  border-radius:16px; padding:2rem; max-width:460px; width:100%;
 }
-.key-modal-title {
-  font-family: 'Instrument Serif', serif; font-size: 1.5rem;
-  color: #F8F6F1; margin-bottom: .5rem;
+.cm-key-title {
+  font-family:'Instrument Serif',serif; font-size:1.5rem;
+  color:#F8F6F1; margin-bottom:.5rem;
 }
-.key-modal-title em { font-style: italic; color: #C9A84C; }
-.key-modal-sub { font-size: 13px; color: #7A7A7A; line-height: 1.6; margin-bottom: 1.25rem; }
-.key-modal-sub a { color: #C9A84C; }
-.key-input {
-  width: 100%; padding: 11px 14px; border-radius: 10px;
-  border: 1px solid #2E2E2E; background: #0E0E0E; color: #F8F6F1;
-  font-family: 'DM Sans', sans-serif; font-size: 14px; margin-bottom: 10px;
+.cm-key-title em { font-style:italic; color:#C9A84C; }
+.cm-key-sub { font-size:13px; color:#7A7A7A; line-height:1.6; margin-bottom:1.25rem; }
+.cm-key-sub a { color:#C9A84C; }
+.cm-key-input {
+  width:100%; padding:11px 14px; border-radius:10px;
+  border:1px solid #2E2E2E; background:#0E0E0E; color:#F8F6F1;
+  font-family:'DM Sans',sans-serif; font-size:14px; margin-bottom:10px;
 }
-.key-input:focus { outline: none; border-color: #C9A84C; }
-.key-modal-btn {
-  width: 100%; padding: 13px; border-radius: 10px; border: none;
-  background: #C9A84C; color: #0E0E0E;
-  font-family: 'Instrument Serif', serif; font-size: 1rem; cursor: pointer;
+.cm-key-input:focus { outline:none; border-color:#C9A84C; }
+.cm-key-btn {
+  width:100%; padding:13px; border-radius:10px; border:none;
+  background:#C9A84C; color:#0E0E0E;
+  font-family:'Instrument Serif',serif; font-size:1rem; cursor:pointer;
 }
-.key-modal-btn:hover { background: #D4A84C; }
-.key-note { font-size: 11px; color: #4A4A4A; text-align: center; margin-top: 10px; line-height: 1.5; }
+.cm-key-btn:hover { background:#D4A84C; }
+.cm-key-note { font-size:11px; color:#4A4A4A; text-align:center; margin-top:10px; line-height:1.5; }
+
 </style>
 </head>
 <body>
@@ -965,29 +965,11 @@ input[type="range"]::-webkit-slider-thumb {
 
   <div class="toast-wrap"><div class="toast" id="toast"></div></div>
 
-
-<div class="key-overlay" id="key-overlay">
-  <div class="key-modal">
-    <div class="key-modal-title">Votre clé <em>Anthropic</em></div>
-    <p class="key-modal-sub">
-      Entrez votre clé API une seule fois — mémorisée pour la session.<br>
-      Obtenez-la sur <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> → API Keys.
-    </p>
-    <input class="key-input" type="password" id="key-input"
-      placeholder="sk-ant-api03-..."
-      onkeydown="if(event.key==='Enter')saveKey()">
-    <button class="key-modal-btn" onclick="saveKey()">Accéder à CinéMatch →</button>
-    <p class="key-note">Votre clé reste dans votre navigateur. Elle n'est jamais stockée sur un serveur.</p>
-  </div>
-</div>
-
 </main>
 
 <script>
-// ═══════════════════════════════════════════════════════
-// CONFIGURATION — collez ici l'URL de votre Worker
-const WORKER_URL = '/proxy';
-// ═══════════════════════════════════════════════════════
+// ── Configuration ──
+let SESSION_API_KEY = sessionStorage.getItem('cm_api_key') || '';
 
 
 let favorites = [];
@@ -1084,10 +1066,6 @@ async function getRecos() {
   const errEl = document.getElementById('err-box');
   errEl.classList.remove('on');
 
-  if (!SESSION_API_KEY) {
-    showKeyModal();
-    return;
-  }
   const f = getFilters();
   const prompt = buildPrompt(f);
 
@@ -1108,13 +1086,9 @@ async function getRecos() {
   }, 2000);
 
   try {
-    const res = await fetch('https://corsproxy.io/?url=https://api.anthropic.com/v1/messages', {
+    const res = await fetch('/.netlify/functions/api', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': SESSION_API_KEY,
-        'anthropic-version': '2023-06-01',
-      },
+      headers: { 'Content-Type': 'application/json', 'x-api-key': SESSION_API_KEY },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 1500,
@@ -1299,22 +1273,38 @@ function showToast(msg) {
 }
 
 function showKeyModal() {
-  document.getElementById('key-overlay').classList.add('on');
-  setTimeout(() => document.getElementById('key-input').focus(), 100);
+  document.getElementById('cm-key-overlay').classList.add('on');
+  setTimeout(() => document.getElementById('cm-key-input').focus(), 150);
 }
 
 function saveKey() {
-  const key = document.getElementById('key-input').value.trim();
-  if (!key.startsWith('sk-ant')) {
-    document.getElementById('key-input').style.borderColor = '#FA320A';
+  const k = document.getElementById('cm-key-input').value.trim();
+  if (!k.startsWith('sk-ant')) {
+    document.getElementById('cm-key-input').style.borderColor = '#FA320A';
     return;
   }
-  SESSION_API_KEY = key;
-  sessionStorage.setItem('cm_api_key', key);
-  document.getElementById('key-overlay').classList.remove('on');
+  SESSION_API_KEY = k;
+  sessionStorage.setItem('cm_api_key', k);
+  document.getElementById('cm-key-overlay').classList.remove('on');
   getRecos();
 }
 
 </script>
+
+<div class="cm-key-overlay" id="cm-key-overlay">
+  <div class="cm-key-box">
+    <div class="cm-key-title">Votre clé <em>Anthropic</em></div>
+    <p class="cm-key-sub">
+      Entrez votre clé une seule fois — mémorisée pour la session.<br>
+      Obtenez-la sur <a href="https://console.anthropic.com" target="_blank" rel="noopener">console.anthropic.com</a> → API Keys.
+    </p>
+    <input class="cm-key-input" type="password" id="cm-key-input"
+      placeholder="sk-ant-api03-..."
+      onkeydown="if(event.key==='Enter')saveKey()">
+    <button class="cm-key-btn" onclick="saveKey()">Accéder à CinéMatch →</button>
+    <p class="cm-key-note">Votre clé reste dans votre navigateur uniquement.</p>
+  </div>
+</div>
+
 </body>
 </html>
